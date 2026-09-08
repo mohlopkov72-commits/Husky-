@@ -1,4 +1,4 @@
-import { getSupabaseAdmin } from '@/lib/supabase-server'
+import { getSupabaseAdmin } from '../../../lib/supabase-server'
 
 export async function GET(request) {
   const secret = process.env.ADMIN_SECRET

@@ -1,4 +1,4 @@
-import { getSupabaseAdmin } from '@/lib/supabase-server'
+import { getSupabaseAdmin } from '../../../lib/supabase-server'
 
 const endpoint = 'https://gptunnel.ru/v1/chat/completions'
 
