@@ -29,19 +29,49 @@
   }
   toggle.addEventListener('click', () => { manualChoice = true; paused = !paused; updateMotion(); });
   reduced.addEventListener('change', () => { if (!manualChoice) { paused = reduced.matches; updateMotion(); } });
+  let closeTimer;
+  function finishClose() {
+    clearTimeout(closeTimer);
+    if (dialog.open) dialog.close();
+    dialog.classList.remove('is-closing');
+  }
+  function closeAbout() {
+    if (!dialog.open || dialog.classList.contains('is-closing')) return;
+    if (reduced.matches) { finishClose(); return; }
+    dialog.classList.add('is-closing');
+    closeTimer = setTimeout(finishClose, 280);
+  }
   open.addEventListener('click', () => {
+    if (dialog.open) return;
+    clearTimeout(closeTimer);
+    dialog.classList.remove('is-closing');
     dialog.showModal();
     dialog.scrollTop = 0;
     document.body.classList.add('dialog-open');
     window.huskySky?.setCovered(true);
   });
-  close.addEventListener('click', () => dialog.close());
-  dialog.addEventListener('click', e => {
-    if (e.target !== dialog) return;
+  close.addEventListener('click', closeAbout);
+  dialog.addEventListener('cancel', event => {
+    event.preventDefault();
+    closeAbout();
+  });
+  dialog.addEventListener('animationend', event => {
+    if (event.target === dialog && event.animationName === 'about-out') finishClose();
+  });
+  let backdropPress = false;
+  function outsideDialog(event) {
+    if (event.target !== dialog) return false;
     const r = dialog.getBoundingClientRect();
-    if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) dialog.close();
+    return event.clientX < r.left || event.clientX > r.right || event.clientY < r.top || event.clientY > r.bottom;
+  }
+  dialog.addEventListener('pointerdown', event => { backdropPress = outsideDialog(event); });
+  dialog.addEventListener('click', e => {
+    if (backdropPress && outsideDialog(e)) closeAbout();
+    backdropPress = false;
   });
   dialog.addEventListener('close', () => {
+    clearTimeout(closeTimer);
+    dialog.classList.remove('is-closing');
     document.body.classList.remove('dialog-open');
     window.huskySky?.setCovered(false);
     open.focus({ preventScroll: true });

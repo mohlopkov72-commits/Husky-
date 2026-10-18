@@ -7,6 +7,7 @@
   const small = matchMedia('(max-width: 700px)');
   let w = 0, h = 0, dpr = 1, stars = [], haze, grain, grainPattern;
   let time = 0, last = 0, frame = 0, nextComet = 3.8, comet = null;
+  let musicEnergy = 0;
   let paused = reduce.matches, covered = document.documentElement.classList.contains('is-loading');
   const pointer = { x: 0, y: 0, tx: 0, ty: 0 };
   let seed = 74823;
@@ -53,8 +54,25 @@
     ctx.fillStyle=haze;ctx.fillRect(0,0,w,h);
     // Slowly breathing atmospheric glow. Stars are individually animated, not a photograph.
     const glow = ctx.createRadialGradient(w*(.5+Math.sin(time*.018)*.04),h*.85,0,w*.5,h*.9,Math.max(w*.64,h*.8));
-    glow.addColorStop(0,'rgba(135,135,135,0.075)');glow.addColorStop(1,'rgba(0,0,0,0)');
+    glow.addColorStop(0,`rgba(155,155,155,${.075 + musicEnergy * .17})`);glow.addColorStop(1,'rgba(0,0,0,0)');
     ctx.fillStyle=glow;ctx.fillRect(0,0,w,h);
+    // Wide, slow ribbons react to the actual low/mid frequencies without flashing.
+    if (musicEnergy > .006) {
+      ctx.save();
+      for (let band = 0; band < 3; band++) {
+        ctx.beginPath();
+        for (let x = 0; x <= w + 12; x += 12) {
+          const envelope = Math.sin(Math.min(1, x / w) * Math.PI);
+          const y = h * (.66 + band * .045) + Math.sin(x / w * 8 + time * .42 + band * 1.3) * (10 + musicEnergy * 28) * envelope;
+          if (!x) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+        }
+        ctx.strokeStyle = `rgba(230,230,230,${musicEnergy * (.13 - band * .025)})`;
+        ctx.lineWidth = 1;
+        ctx.shadowColor = '#ffffff35';ctx.shadowBlur = 10;
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
     for (const s of stars) {
       const driftX=time*(.8+s.z*1.6);
       const driftY=time*(.11+s.z*.2);
@@ -62,8 +80,8 @@
       const y=((s.y*h+driftY+pointer.y*s.z+h+30)%(h+30))-15;
       const twinkle=.65+Math.sin(time*s.speed+s.phase)*.24+Math.sin(time*s.speed*.4+s.phase)*.11;
       const fade=y>h*.80?Math.max(.08,1-(y/h-.80)*4):1;
-      ctx.globalAlpha=Math.max(.05,s.a*twinkle*fade);
-      ctx.fillStyle='#efefef';ctx.beginPath();ctx.arc(x,y,s.r,0,Math.PI*2);ctx.fill();
+      ctx.globalAlpha=Math.min(1,Math.max(.05,s.a*(twinkle + musicEnergy * s.z * .32)*fade));
+      ctx.fillStyle='#efefef';ctx.beginPath();ctx.arc(x,y,s.r*(1+musicEnergy*.22),0,Math.PI*2);ctx.fill();
       if(s.r>.88) {
         ctx.globalAlpha=s.a*twinkle*.09;
         ctx.beginPath();ctx.arc(x,y,s.r*3,0,Math.PI*2);ctx.fill();
@@ -123,6 +141,8 @@
     // A 30 fps cap on small screens reduces battery usage without changing the motion.
     if(small.matches && delta < .030) {frame=requestAnimationFrame(loop);return;}
     last=now;time+=delta;
+    const target = reduce.matches ? 0 : (window.huskyMusic?.sample() || 0);
+    musicEnergy += (target - musicEnergy) * Math.min(1, delta * (target > musicEnergy ? 3 : 5));
     pointer.x+=(pointer.tx-pointer.x)*Math.min(1,delta*2.2);
     pointer.y+=(pointer.ty-pointer.y)*Math.min(1,delta*2.2);
     document.documentElement.style.setProperty('--pointer-x',pointer.x.toFixed(2)+'px');
@@ -145,9 +165,9 @@
   let resizeFrame=0;
   addEventListener('resize',()=>{cancelAnimationFrame(resizeFrame);resizeFrame=requestAnimationFrame(resize);},{passive:true});
   window.huskySky={
-    setPaused(value){paused=value;if(paused)stop();else schedule();},
+    setPaused(value){paused=value;if(paused){stop();musicEnergy=0;draw();}else schedule();},
     setCovered(value){covered=value;if(covered)stop();else schedule();},
-    getState(){return {paused,covered,time,stars:stars.length,comet:comet?{progress:(time-comet.start)/comet.duration}:null,width:w,height:h,pointer:{x:pointer.x,y:pointer.y}};}
+    getState(){return {paused,covered,time,musicEnergy,stars:stars.length,comet:comet?{progress:(time-comet.start)/comet.duration}:null,width:w,height:h,pointer:{x:pointer.x,y:pointer.y}};}
   };
   resize();schedule();
 })();

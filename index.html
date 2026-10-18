@@ -29,15 +29,23 @@
   <script src="music.js" defer></script>
 </head>
 <body>
+  <svg class="profile-emoji-filters" width="0" height="0" aria-hidden="true" focusable="false">
+    <defs><filter id="profile-white-ink" color-interpolation-filters="sRGB">
+      <feColorMatrix type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  .3614 1.2158 .1228 0 -.28"/>
+    </filter></defs>
+  </svg>
   <div id="preloader" class="preloader" role="status" aria-label="Загрузка сайта HUSKY" data-phase="orbit">
     <canvas id="loader-sky" aria-hidden="true"></canvas>
+    <div class="loader-edge loader-edge-top" aria-hidden="true"><span>HUSKY</span><span>ЛИЧНОЕ ПРОСТРАНСТВО</span></div>
     <div class="loader-inner" aria-hidden="true">
+      <span class="loader-kicker">МЕЖДУ МУЗЫКОЙ И ЗВЁЗДАМИ</span>
       <div class="loader-stage">
         <canvas id="loader-stars" width="680" height="440"></canvas>
         <span class="loader-mark"><img src="assets/husky-logo.webp" alt="" width="90" height="90"></span>
       </div>
       <p class="loader-title">HUSKY</p>
-      <p class="loader-caption">Личное пространство</p>
+      <p class="loader-caption">Собираем звёзды</p>
+      <div class="loader-progress"><span></span></div>
     </div>
   </div>
   <div class="night-scene" aria-hidden="true">
@@ -68,22 +76,32 @@
     <aside class="music-player" aria-labelledby="music-heading" hidden>
       <div class="music-heading-row">
         <h2 id="music-heading"><span class="music-equalizer" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Husky слушает</h2>
-        <span class="music-number" aria-label="Трек 1 из 2">01 / 02</span>
+        <span class="music-number" aria-label="Трек 1 из 10">01 / 10</span>
       </div>
       <div class="music-main">
-        <div class="music-artwork"><img id="music-cover" width="56" height="56" alt="" decoding="async"><span class="music-artwork-fallback" aria-hidden="true">♫</span></div>
+        <div class="music-artwork"><img id="music-cover" width="56" height="56" alt="" decoding="async"><span class="music-artwork-fallback" aria-hidden="true"><span>H</span></span></div>
         <div class="music-track"><p id="music-title"></p><p id="music-artist"></p></div>
+
+      </div>
+      <div class="music-controls">
+        <button class="music-list-toggle music-tool" type="button" aria-label="Открыть плейлист" aria-expanded="false" aria-controls="music-playlist"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 6h16M4 12h10M4 18h10m5-4v7m-3-3 3 3 3-3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <div class="music-transport">
+          <button class="music-prev music-tool" type="button" aria-label="Предыдущий трек"><svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 5h2v14H6zm12 0v14L8 12z"/></svg></button>
         <button class="music-play" type="button" aria-label="Воспроизвести трек" aria-pressed="false">
           <svg class="music-play-icon" viewBox="0 0 20 20" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M6 3.9c0-.7.8-1.1 1.4-.7l9 5.3c.6.4.6 1.3 0 1.7l-9 5.3c-.6.4-1.4 0-1.4-.7V3.9Z"/></svg>
           <svg class="music-pause-icon" viewBox="0 0 20 20" width="20" height="20" fill="currentColor" aria-hidden="true"><rect x="5" y="4" width="3" height="12" rx="1"/><rect x="12" y="4" width="3" height="12" rx="1"/></svg>
           <span class="music-spinner" aria-hidden="true"></span>
         </button>
+          <button class="music-next music-tool" type="button" aria-label="Следующий трек"><svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16 5h2v14h-2zM6 5l10 7-10 7z"/></svg></button>
+        </div>
+        <span class="music-mode" title="Последовательное воспроизведение" aria-label="Последовательное воспроизведение">↻</span>
       </div>
       <div class="music-timeline">
         <input id="music-seek" type="range" min="0" max="100" value="0" step="0.1" disabled aria-label="Позиция в треке">
         <span id="music-time">0:00</span>
       </div>
       <div class="music-bottom"><span id="music-status" role="status">Husky / Плейлист</span><label class="music-volume"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M7 3 3.5 6H1v4h2.5L7 13V3Zm3 2c1.5 1.5 1.5 4.5 0 6m2-8c2.5 2.5 2.5 7.5 0 10" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg><input id="music-volume" type="range" min="0" max="100" value="65" aria-label="Громкость музыки"></label></div>
+      <ol id="music-playlist" aria-label="Плейлист Husky" hidden></ol>
       <audio id="music-audio" preload="none"></audio>
     </aside>
   </main>
@@ -100,19 +118,35 @@
   <dialog id="about-dialog" aria-labelledby="about-title">
     <div class="about-shell">
       <header class="about-header">
-        <span class="eyebrow">HUSKY / ЗНАКОМСТВО</span>
+        <span class="eyebrow"><span class="about-status-dot" aria-hidden="true"></span>ЛИЧНОЕ ПРОСТРАНСТВО</span>
         <button class="close-button" type="button" aria-label="Закрыть окно «Обо мне»" autofocus><svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="m5 5 10 10M15 5 5 15" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></button>
       </header>
+      <div class="about-banner"><img src="assets/about-banner.jpg" width="1280" height="512" alt="Информация — HUSKY. Чёрно-серебристый баннер с эмблемой хаски." decoding="async"></div>
       <div class="about-content">
-        <h2 id="about-title">Обо мне<span>.</span></h2>
-        <p class="about-intro">Husky — это уже не просто ник. Это экосистема.</p>
-        <p class="about-description">За этим названием — мои проекты, творчество и идеи. Я создаю визуальный контент, занимаюсь веб-разработкой и экспериментирую с искусственным интеллектом.</p>
-        <div class="directions">
-          <section class="direction"><span class="direction-number">01</span><div><h3>Husky Media</h3><p>Эдиты, видеомонтаж и визуальный контент. Музыка, эффекты, переходы и цветокоррекция — всё, что помогает создавать атмосферные, запоминающиеся ролики. Мне близка мрачная и нестандартная эстетика.</p></div></section>
-          <section class="direction"><span class="direction-number">02</span><div><h3>Husky Dev</h3><p>Сайты, веб-приложения и цифровые проекты. Работаю с кодом и интерфейсами, экспериментирую с дизайном и превращаю идеи в удобные, работающие решения.</p></div></section>
-          <section class="direction"><span class="direction-number">03</span><div><h3>Husky AI</h3><p>Нейросети, API и автоматизация. Изучаю ИИ-модели и создаю проекты для обработки информации, генерации контента и расширения возможностей веб-приложений.</p></div></section>
-        </div>
-        <p class="about-outro">Творчество, технологии и постоянное развитие.</p>
+        <section class="about-profile">
+          <p class="about-date">#husky <span>1.01. 2025<svg class="profile-emoji profile-emoji-ring" viewBox="368 349 52 54" role="img" aria-label="Значок HUSKY"><image href="assets/profile-emoji-source.jpg" width="639" height="1280"/></svg></span></p>
+          <h2 id="about-title"><svg class="profile-emoji profile-emoji-wave" viewBox="73 255 49 50" role="img" aria-label="Приветствие HUSKY"><image href="assets/profile-emoji-source.jpg" width="639" height="1280"/></svg> HUSKY <span class="about-role">| Adapter</span></h2>
+          <p class="about-activity-label">my activities - деятельность.</p>
+          <p class="about-intro">развитие в разных сферах <svg class="profile-emoji profile-emoji-chart" viewBox="572 500 41 42" role="img" aria-label="Диаграмма роста"><image href="assets/profile-emoji-source.jpg" width="639" height="1280"/></svg></p>
+        </section>
+        <nav class="about-links" aria-label="Ссылки HUSKY">
+          <a class="about-link" href="https://t.me/husky_rep" target="_blank" rel="noopener noreferrer"><span><span class="about-link-label">Reputation</span><strong>@husky_rep</strong></span><span class="about-link-arrow" aria-hidden="true">↗</span></a>
+          <a class="about-link" href="https://t.me/huskgram" target="_blank" rel="noopener noreferrer"><span><span class="about-link-label">Канал</span><strong>@huskgram</strong></span><span class="about-link-arrow" aria-hidden="true">↗</span></a>
+          <a class="about-link" href="https://t.me/signs_husky" target="_blank" rel="noopener noreferrer"><span><span class="about-link-label">my signs</span><strong>signs_husky</strong></span><span class="about-link-arrow" aria-hidden="true">↗</span></a>
+          <a class="about-link" href="https://t.me/Wostal_bot" target="_blank" rel="noopener noreferrer"><span><span class="about-link-label">SpamBlock</span><strong>@Wostal_bot</strong></span><svg class="profile-emoji profile-emoji-bot" viewBox="515 1025 47 52" role="img" aria-label="Персонаж HUSKY"><image href="assets/profile-emoji-source.jpg" width="639" height="1280"/></svg></a>
+        </nav>
+        <section class="about-rules" aria-labelledby="about-rules-title">
+          <p class="about-section-label" id="about-rules-title"><span aria-hidden="true">01 /</span> ПЕРЕД ТЕМ КАК НАПИСАТЬ</p>
+          <p class="about-rule-lead">Спам // &quot;Оскорбления&quot; <span>Остаются без ответа.</span></p>
+          <a class="about-biography" href="https://t.me/Huskybiograf" target="_blank" rel="noopener noreferrer"><span>Больше личной информации тут || <svg class="mono-emoji" viewBox="0 0 24 24" role="img" aria-label="Сердце"><path fill="currentColor" d="M12 21s-9-5.5-9-12a5.5 5.5 0 0 1 9-4.2A5.5 5.5 0 0 1 21 9c0 6.5-9 12-9 12Z"/></svg><strong>Huskybiograf.t.me</strong></span><span aria-hidden="true">↗</span></a>
+          <p class="about-greeting">//DOBROGO VREMENI PRIPROVOJDEIYA!</p>
+          <blockquote class="about-note">("Искренняя просьба не тратить мое и свое время, четко формулируйте вопрос до того как написать мне. По поводу сотрудничества писать ниже. Всем хорошего настроения!")</blockquote>
+          <div class="about-reminder"><span class="about-reminder-mark" aria-hidden="true">!</span><p><span lang="en">if I don't answer in PM then DO NOT duplicate ||</span> Если не отвечаю в лс то НЕ дублируйте. Надеюсь ясно<svg class="mono-emoji" viewBox="0 0 24 24" role="img" aria-label="Вопрос"><path d="M8 7.5a4 4 0 0 1 8 0c0 3-4 3.1-4 6.5" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/><circle cx="12" cy="19" r="1.6" fill="currentColor"/></svg></p></div>
+        </section>
+        <footer class="about-contact">
+          <div><span class="about-section-label">ЕСТЬ ПРЕДЛОЖЕНИЕ?</span><p>Связь и сотрудничество</p></div>
+          <a href="https://t.me/husky_x" target="_blank" rel="noopener noreferrer" class="about-contact-button">Написать мне <span aria-hidden="true">↗</span></a>
+        </footer>
       </div>
     </div>
   </dialog>
