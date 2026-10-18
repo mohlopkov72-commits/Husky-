@@ -15,6 +15,7 @@
   const started = performance.now();
   let width = 340, height = 220, frame = 0, ready = false, ending = false;
   let alignAt = null, frozenAngle = 0, completionTimer = 0;
+  let assetsLoaded = 0;
   let skyWidth = 0, skyHeight = 0, skyStars = [];
   const clamp = value => Math.max(0, Math.min(1, value));
   const ease = value => 1 - Math.pow(1 - value, 3);
@@ -97,31 +98,35 @@
     renderSky(elapsed);
     ctx.clearRect(0, 0, width, height);
     const cx = width / 2, cy = height / 2;
-    const radius = Math.min(width * .24, 78);
+    const radius = Math.min(width * .32, 110);
     const spacing = Math.min(28, (width - 42) / (count - 1));
     const aligning = alignAt !== null;
     const alignElapsed = aligning ? elapsed - alignAt : 0;
     const overall = staticRow || (aligning ? clamp(alignElapsed / 1000) : 0);
-    const ringOpacity = (1 - overall) * .1;
-    ctx.strokeStyle = `rgba(255,255,255,${ringOpacity})`;
-    ctx.lineWidth = .6;
-    ctx.beginPath();ctx.arc(cx, cy, radius, 0, Math.PI * 2);ctx.stroke();
-    ctx.strokeStyle = `rgba(255,255,255,${ringOpacity * .3})`;
-    ctx.beginPath();ctx.arc(cx, cy, radius + 18, 0, Math.PI * 2);ctx.stroke();
+    const ringOpacity = (1 - overall) * .18;
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(-.35);
+    for (let ring = 0; ring < 3; ring++) {
+      ctx.strokeStyle = `rgba(255,255,255,${ringOpacity * (ring === 1 ? 1 : .4)})`;
+      ctx.lineWidth = .7;
+      ctx.setLineDash(ring === 2 ? [1, 8] : []);
+      ctx.beginPath();
+      ctx.ellipse(0,0,radius + ring * 15,(radius + ring * 15) * .64,0,0,Math.PI * 2);
+      ctx.stroke();
+    }
+    ctx.restore();
 
     for (let i = 0; i < count; i++) {
-      const angle = i / count * Math.PI * 2 - Math.PI / 2 + (aligning ? frozenAngle : elapsed * .0033);
+      const angle = i / count * Math.PI * 2 - Math.PI / 2 + (aligning ? frozenAngle : elapsed * .0014);
       const progress = staticRow || (aligning ? ease(clamp((alignElapsed - i * 35) / 720)) : 0);
-      const orbitX = Math.cos(angle) * radius;
-      const orbitY = Math.sin(angle) * radius;
+      const ellipseX = Math.cos(angle) * radius;
+      const ellipseY = Math.sin(angle) * radius * .64;
+      const orbitX = ellipseX * Math.cos(-.35) - ellipseY * Math.sin(-.35);
+      const orbitY = ellipseX * Math.sin(-.35) + ellipseY * Math.cos(-.35);
       const rowX = (i - (count - 1) / 2) * spacing;
       const x = cx + orbitX * (1 - progress) + rowX * progress;
       const y = cy + orbitY * (1 - progress);
-      if (!aligning && !staticRow) {
-        ctx.strokeStyle = 'rgba(255,255,255,.12)';
-        ctx.lineWidth = 1;
-        ctx.beginPath();ctx.arc(cx, cy, radius, angle - .3, angle - .07);ctx.stroke();
-      }
       const shimmer = .78 + .22 * Math.sin(i * 1.3 + elapsed * .002);
       const opacity = staticRow ? .85 : Math.min(1, elapsed / 240) * (shimmer * (1 - progress) + .9 * progress);
       star(x, y, (i % 3 === 0 ? 6.5 : 4.8) * (1 - progress) + 5.2 * progress,
@@ -155,8 +160,9 @@
     }
     if (alignAt === null && elapsed >= 1250 && (ready || elapsed >= 3600)) {
       alignAt = elapsed;
-      frozenAngle = elapsed * .0033;
+      frozenAngle = elapsed * .0014;
       loader.dataset.phase = 'align';
+      loader.querySelector('.loader-caption').textContent = 'Ваше пространство готово';
     }
     render(elapsed);
     if (alignAt !== null && elapsed - alignAt >= 1000) loader.dataset.phase = 'row';
@@ -179,7 +185,11 @@
   }
 
   const imageReady = [...document.querySelectorAll('.foreground img, .brand-mark img')].map(image => image.decode?.() ?? Promise.resolve());
-  Promise.allSettled([document.fonts?.ready ?? Promise.resolve(), ...imageReady]).then(() => { ready = true; });
+  const assets = [document.fonts?.ready ?? Promise.resolve(), ...imageReady];
+  Promise.allSettled(assets.map(asset => Promise.resolve(asset).finally(() => {
+    assetsLoaded++;
+    loader.style.setProperty('--loaded', `${assetsLoaded / assets.length * 100}%`);
+  }))).then(() => { ready = true; });
   window.addEventListener('resize', resize, { passive: true });
   reduced.addEventListener('change', onMotionChange);
   resize();
