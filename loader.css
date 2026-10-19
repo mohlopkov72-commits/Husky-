@@ -1,0 +1,34 @@
+/* A falling star fades into the HUSKY emblem. */
+.preloader{position:fixed;inset:0;z-index:1000;display:none;overflow:hidden;isolation:isolate;color:#eee;background:linear-gradient(180deg,#02040bc9,#03070ebd);opacity:1;transition:opacity var(--intro-reveal-duration,.5s) ease;--loaded:0%}
+.preloader[hidden]{display:none!important}
+.is-loading .preloader,.preloader[data-phase="reveal"]{display:block}
+.preloader[data-phase="reveal"]{opacity:0;pointer-events:none}
+.is-loading body{overflow:hidden}
+.intro-ambient{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 47%,#10213b29,transparent 57%);pointer-events:none}
+#intro-meteor{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.intro-bloom{position:absolute;left:50%;top:47%;width:clamp(350px,70vw,820px);aspect-ratio:1;transform:translate(-50%,-50%) scale(.72);background:radial-gradient(circle,#173b6e30,#0b22402e 24%,transparent 64%);opacity:0;transition:opacity .65s,transform 1s cubic-bezier(.16,1,.3,1);pointer-events:none}
+.intro-impact{position:absolute;left:50%;top:47%;width:130px;aspect-ratio:1;border:1px solid #a3c5fa35;border-radius:50%;opacity:0;transform:translate(-50%,-50%) scale(.3);pointer-events:none}
+.intro-topline{position:absolute;top:max(30px,env(safe-area-inset-top));left:4.8%;right:4.8%;display:flex;align-items:center;justify-content:space-between;gap:20px;z-index:4}
+.intro-signature{font-size:11px;letter-spacing:.2em;font-weight:600;color:#c6cbd5}
+.intro-signature span{display:inline-block;font-size:8px;font-weight:400;letter-spacing:.14em;color:#5e6675;margin-left:16px;padding-left:16px;border-left:1px solid #ffffff1a}
+.intro-skip{display:flex;align-items:center;gap:12px;border:1px solid #ffffff1a;background:#ffffff04;color:#999da8;border-radius:40px;min-height:42px;padding:0 17px;font-size:10px;letter-spacing:.04em;transition:color .2s,border-color .2s,background .2s}
+.intro-skip:hover{color:#fff;border-color:#ffffff40;background:#ffffff09}
+.intro-skip svg{width:13px;height:13px}
+.intro-emblem{position:absolute;left:50%;top:47%;width:clamp(230px,34vw,340px);aspect-ratio:1;transform:translate(-50%,-50%) scale(.9);opacity:0;filter:blur(5px);transition:opacity .48s ease,transform .7s cubic-bezier(.16,1,.3,1),filter .5s ease;pointer-events:none}
+.intro-logo{display:block;width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 0 19px #34538142) drop-shadow(0 5px 20px #0009)}
+.intro-wordmark{position:absolute;left:0;right:0;top:calc(47% + clamp(94px,12vw,133px));margin:0;text-align:center;font-size:clamp(20px,2.3vw,25px);font-weight:500;letter-spacing:.3em;padding-left:.3em;color:#d4ddeb;opacity:0;transform:translateY(5px);transition:opacity .45s .08s,transform .6s .08s}
+.intro-bottom{position:absolute;left:50%;bottom:max(38px,7svh);transform:translateX(-50%);width:min(200px,65vw);text-align:center;z-index:3}
+.intro-status{margin:0;color:#717b8f;font-size:9px;letter-spacing:.075em;line-height:1.6}
+.intro-meter{height:1px;width:100%;margin-top:16px;background:#ffffff0e;overflow:hidden}
+.intro-meter span{display:block;height:100%;width:var(--loaded);background:linear-gradient(90deg,#344b70,#a5bbda);transition:width .4s ease}
+.intro-footnote{display:block;color:#414c60;font-size:6px;letter-spacing:.2em;margin-top:12px}
+.preloader[data-phase="glow"] .intro-emblem,.preloader[data-phase="reveal"] .intro-emblem{opacity:1;filter:blur(0);transform:translate(-50%,-50%) scale(1)}
+.preloader[data-phase="glow"] .intro-wordmark,.preloader[data-phase="reveal"] .intro-wordmark{opacity:1;transform:translateY(0)}
+.preloader[data-phase="glow"] .intro-bloom,.preloader[data-phase="reveal"] .intro-bloom{opacity:1;transform:translate(-50%,-50%) scale(1)}
+.preloader[data-phase="glow"] .intro-impact{animation:intro-impact .65s ease-out both}
+.intro-without-logo .intro-emblem{visibility:hidden}
+.intro-without-logo .intro-wordmark{top:47%;font-size:32px}
+@keyframes intro-impact{0%{opacity:0;transform:translate(-50%,-50%) scale(.3)}20%{opacity:.45}100%{opacity:0;transform:translate(-50%,-50%) scale(1.8)}}
+@media(max-width:600px){.intro-topline{top:max(22px,env(safe-area-inset-top));left:22px;right:22px}.intro-signature span{display:none}.intro-skip{min-height:40px;padding:0 13px;font-size:9px}.intro-emblem{width:250px}.intro-wordmark{top:calc(47% + 103px);font-size:22px}.intro-bloom{width:500px}.intro-bottom{bottom:max(34px,6svh)}}
+@media(max-height:500px){.intro-topline{top:15px}.intro-emblem{width:205px}.intro-wordmark{top:calc(47% + 85px);font-size:18px}.intro-bottom{bottom:20px;width:150px}.intro-footnote{display:none}.intro-status{font-size:8px}.intro-meter{margin-top:11px}.intro-impact{width:100px}}
+@media(prefers-reduced-motion:reduce){.preloader,.preloader *{animation:none!important;transition:none!important}.intro-impact{display:none}}

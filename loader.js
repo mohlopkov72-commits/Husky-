@@ -1,197 +1,164 @@
 (() => {
   'use strict';
   const loader = document.querySelector('#preloader');
-  const canvas = document.querySelector('#loader-stars');
-  const ctx = canvas?.getContext('2d');
-  const skyCanvas = document.querySelector('#loader-sky');
-  const skyCtx = skyCanvas?.getContext('2d');
-  if (!loader || !ctx || !document.documentElement.classList.contains('is-loading')) {
-    window.huskyReveal?.();
-    return;
-  }
-
+  if (!loader || !document.documentElement.classList.contains('is-loading')) return;
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
-  const count = 9;
-  const started = performance.now();
-  let width = 340, height = 220, frame = 0, ready = false, ending = false;
-  let alignAt = null, frozenAngle = 0, completionTimer = 0;
-  let assetsLoaded = 0;
-  let skyWidth = 0, skyHeight = 0, skyStars = [];
-  const clamp = value => Math.max(0, Math.min(1, value));
-  const ease = value => 1 - Math.pow(1 - value, 3);
-
-  document.querySelectorAll('.site-header, main, .site-footer, #about-dialog').forEach(element => {
+  const logo = loader.querySelector('.intro-logo');
+  const status = loader.querySelector('.intro-status');
+  const skip = loader.querySelector('.intro-skip');
+  const canvas = loader.querySelector('#intro-meteor');
+  const ctx = canvas?.getContext('2d');
+  const timers = new Set();
+  const timing = {flight:850,emblem:650,reveal:500};
+  loader.style.setProperty('--intro-reveal-duration', `${timing.reveal}ms`);
+  let completed = false, started = false, ready = false, settled = false, revealing = false;
+  let frame = 0, startTime = 0, width = 0, height = 0;
+  const later = (fn, delay) => {
+    const timer = setTimeout(() => { timers.delete(timer); if (!completed) fn(); }, delay);
+    timers.add(timer);
+  };
+  const decode = image => image?.decode ? image.decode() : Promise.resolve();
+  document.querySelectorAll('.site-header, main, .site-footer, #about-dialog, .interface-toggle').forEach(element => {
     element.inert = true;
     element.setAttribute('data-loader-inert', '');
   });
-
-  function resize() {
-    const bounds = canvas.getBoundingClientRect();
-    width = bounds.width;
-    height = bounds.height;
-    const dpr = Math.min(devicePixelRatio || 1, 2);
-    canvas.width = Math.round(width * dpr);
-    canvas.height = Math.round(height * dpr);
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    if (skyCtx) {
-      const skyBounds = skyCanvas.getBoundingClientRect();
-      skyWidth = skyBounds.width;
-      skyHeight = skyBounds.height;
-      skyCanvas.width = Math.round(skyWidth * dpr);
-      skyCanvas.height = Math.round(skyHeight * dpr);
-      skyCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      // Normalized positions retain their arrangement through viewport changes.
-      const total = Math.min(2300, Math.max(600, Math.round(skyWidth * skyHeight / 650)));
-      while (skyStars.length < total) skyStars.push({
-        x: Math.random(), y: Math.random(), radius: .3 + Math.random() ** 4 * 1.1,
-        alpha: .16 + Math.random() ** 2 * .65, phase: Math.random() * Math.PI * 2,
-        speed: .4 + Math.random() * .65
-      });
-      skyStars.length = total;
-      renderSky(0);
-    }
-    if (reduced.matches) render(0, 1);
+  function stopDrawing() { cancelAnimationFrame(frame); frame = 0; }
+  function cleanup() {
+    completed = true;
+    timers.forEach(clearTimeout);
+    timers.clear();
+    stopDrawing();
+    reduced.removeEventListener('change', onMotionChange);
+    document.removeEventListener('visibilitychange', onVisibility);
+    window.removeEventListener('resize', resize);
+    window.removeEventListener('husky:revealed', cleanup);
+    window.removeEventListener('pagehide', complete);
+    skip.removeEventListener('click', onSkip);
   }
-
-  function renderSky(elapsed) {
-    if (!skyCtx) return;
-    skyCtx.clearRect(0, 0, skyWidth, skyHeight);
-    const time = reduced.matches ? 0 : elapsed / 1000;
-    for (const point of skyStars) {
-      const x = (point.x * skyWidth + time * point.speed * .8) % skyWidth;
-      const y = (point.y * skyHeight + time * point.speed * .25) % skyHeight;
-      const twinkle = .72 + .28 * Math.sin(time * point.speed + point.phase);
-      skyCtx.fillStyle = `rgba(245,245,245,${point.alpha * twinkle})`;
-      skyCtx.beginPath();
-      skyCtx.arc(x, y, point.radius, 0, Math.PI * 2);
-      skyCtx.fill();
-      if (point.radius > 1.1) {
-        skyCtx.fillStyle = `rgba(255,255,255,${point.alpha * twinkle * .08})`;
-        skyCtx.beginPath();
-        skyCtx.arc(x, y, point.radius * 3, 0, Math.PI * 2);
-        skyCtx.fill();
-      }
-    }
+  function complete() {
+    if (completed) return;
+    cleanup();
+    loader.dataset.phase = 'done';
+    window.huskyReveal?.();
   }
-
-  function star(x, y, radius, rotation, opacity) {
-    ctx.save();
-    ctx.translate(x, y);
-    ctx.rotate(rotation);
-    ctx.globalAlpha = opacity;
-    ctx.fillStyle = '#fafafa';
-    ctx.shadowColor = '#ffffff90';
-    ctx.shadowBlur = 11;
-    ctx.beginPath();
-    for (let vertex = 0; vertex < 8; vertex++) {
-      const angle = vertex * Math.PI / 4 - Math.PI / 2;
-      const distance = vertex % 2 ? radius * .25 : radius;
-      if (vertex === 0) ctx.moveTo(Math.cos(angle) * distance, Math.sin(angle) * distance);
-      else ctx.lineTo(Math.cos(angle) * distance, Math.sin(angle) * distance);
-    }
-    ctx.closePath();
-    ctx.fill();
-    ctx.restore();
-  }
-
-  function render(elapsed, staticRow = 0) {
-    renderSky(elapsed);
-    ctx.clearRect(0, 0, width, height);
-    const cx = width / 2, cy = height / 2;
-    const radius = Math.min(width * .32, 110);
-    const spacing = Math.min(28, (width - 42) / (count - 1));
-    const aligning = alignAt !== null;
-    const alignElapsed = aligning ? elapsed - alignAt : 0;
-    const overall = staticRow || (aligning ? clamp(alignElapsed / 1000) : 0);
-    const ringOpacity = (1 - overall) * .18;
-    ctx.save();
-    ctx.translate(cx, cy);
-    ctx.rotate(-.35);
-    for (let ring = 0; ring < 3; ring++) {
-      ctx.strokeStyle = `rgba(255,255,255,${ringOpacity * (ring === 1 ? 1 : .4)})`;
-      ctx.lineWidth = .7;
-      ctx.setLineDash(ring === 2 ? [1, 8] : []);
-      ctx.beginPath();
-      ctx.ellipse(0,0,radius + ring * 15,(radius + ring * 15) * .64,0,0,Math.PI * 2);
-      ctx.stroke();
-    }
-    ctx.restore();
-
-    for (let i = 0; i < count; i++) {
-      const angle = i / count * Math.PI * 2 - Math.PI / 2 + (aligning ? frozenAngle : elapsed * .0014);
-      const progress = staticRow || (aligning ? ease(clamp((alignElapsed - i * 35) / 720)) : 0);
-      const ellipseX = Math.cos(angle) * radius;
-      const ellipseY = Math.sin(angle) * radius * .64;
-      const orbitX = ellipseX * Math.cos(-.35) - ellipseY * Math.sin(-.35);
-      const orbitY = ellipseX * Math.sin(-.35) + ellipseY * Math.cos(-.35);
-      const rowX = (i - (count - 1) / 2) * spacing;
-      const x = cx + orbitX * (1 - progress) + rowX * progress;
-      const y = cy + orbitY * (1 - progress);
-      const shimmer = .78 + .22 * Math.sin(i * 1.3 + elapsed * .002);
-      const opacity = staticRow ? .85 : Math.min(1, elapsed / 240) * (shimmer * (1 - progress) + .9 * progress);
-      star(x, y, (i % 3 === 0 ? 6.5 : 4.8) * (1 - progress) + 5.2 * progress,
-        (elapsed * .0015 + i * .4) * (1 - progress), opacity);
-    }
-  }
-
-  function finish() {
-    if (ending) return;
-    ending = true;
-    cancelAnimationFrame(frame);
+  function reveal() {
+    if (completed || revealing) return;
+    revealing = true;
     loader.dataset.phase = 'reveal';
     document.documentElement.classList.remove('is-loading');
-    // The veil fades as the page becomes visible. Keep controls inert until it has cleared.
-    completionTimer = setTimeout(() => {
-      window.huskyReveal?.();
-      cleanup();
-    }, reduced.matches ? 0 : 580);
+    later(complete, timing.reveal + 30);
   }
-
+  function maybeReveal() { if (ready && settled) reveal(); }
+  function showEmblem() {
+    loader.classList.toggle('intro-without-logo', !logo.naturalWidth);
+    loader.dataset.phase = 'glow';
+    status.textContent = 'Твоё пространство';
+  }
+  function staticIntro() {
+    timers.forEach(clearTimeout);
+    timers.clear();
+    stopDrawing();
+    if (ctx) ctx.clearRect(0,0,width,height);
+    loader.dataset.motion = 'reduced';
+    showEmblem();
+    later(complete, 220);
+  }
+  function onMotionChange() { if (reduced.matches) staticIntro(); }
+  function onVisibility() { if (document.hidden) complete(); }
+  function onSkip() {
+    const returnFocus = document.activeElement === skip;
+    complete();
+    if (returnFocus) document.querySelector('.actions .button')?.focus({preventScroll:true});
+  }
+  function resize() {
+    if (!ctx) return;
+    width = innerWidth; height = innerHeight;
+    const ratio = Math.min(devicePixelRatio || 1, width < 700 ? 1.5 : 1.75);
+    canvas.width = Math.round(width*ratio); canvas.height = Math.round(height*ratio);
+    ctx.setTransform(ratio,0,0,ratio,0,0);
+    if (started && !completed && !reduced.matches) draw(performance.now()-startTime);
+  }
+  function draw(elapsed) {
+    if (!ctx) return;
+    ctx.clearRect(0,0,width,height);
+    const progress = Math.min(1, Math.max(0,elapsed / timing.flight));
+    const travel = 1-Math.pow(1-progress,1.6);
+    const impact = Math.max(0,elapsed-timing.flight);
+    const startX = -60, startY = height*.09;
+    const endX = width*.5, endY = height*.47;
+    const dx = endX-startX, dy = endY-startY;
+    const distance = Math.hypot(dx,dy), ux = dx/distance, uy = dy/distance;
+    const x = startX+dx*travel, y = startY+dy*travel;
+    const length = Math.min(340,width*.46,distance*travel*.85);
+    const tailX = x-ux*length, tailY = y-uy*length;
+    const opacity = Math.min(1,progress*7)*Math.max(0,1-impact/320);
+    if (opacity > 0) {
+      ctx.save();ctx.globalCompositeOperation='lighter';
+      const plume=ctx.createLinearGradient(tailX,tailY,x,y);
+      plume.addColorStop(0,'rgba(113,153,220,0)');plume.addColorStop(.6,`rgba(139,182,244,${opacity*.07})`);plume.addColorStop(1,`rgba(217,236,255,${opacity*.3})`);
+      ctx.fillStyle=plume;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(tailX-uy*5,tailY+ux*5);ctx.lineTo(tailX+uy*5,tailY-ux*5);ctx.closePath();ctx.fill();
+      const streak=ctx.createLinearGradient(tailX,tailY,x,y);
+      streak.addColorStop(0,'rgba(135,173,231,0)');streak.addColorStop(.55,`rgba(184,214,255,${opacity*.45})`);streak.addColorStop(1,`rgba(248,252,255,${opacity})`);
+      ctx.strokeStyle=streak;ctx.lineWidth=1.4;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(tailX,tailY);ctx.lineTo(x,y);ctx.stroke();
+      const halo=ctx.createRadialGradient(x,y,0,x,y,15);
+      halo.addColorStop(0,`rgba(245,250,255,${opacity*.85})`);halo.addColorStop(.15,`rgba(189,216,255,${opacity*.4})`);halo.addColorStop(1,'rgba(101,159,255,0)');
+      ctx.fillStyle=halo;ctx.fillRect(x-15,y-15,30,30);
+      ctx.fillStyle=`rgba(255,255,255,${opacity})`;ctx.beginPath();ctx.arc(x,y,1.65,0,Math.PI*2);ctx.fill();
+      for (let i=1;i<=14;i++) {
+        const along=i/15, scatter=Math.sin(i*8.37)*along*5;
+        ctx.globalAlpha=opacity*(1-along)*.35;ctx.fillStyle='#d9e8ff';
+        ctx.beginPath();ctx.arc(x-ux*length*along-uy*scatter,y-uy*length*along+ux*scatter,.35+(1-along)*.35,0,Math.PI*2);ctx.fill();
+      }
+      ctx.restore();
+    }
+    if (impact > 0 && impact < 600) {
+      const progress = impact/600;
+      ctx.save();ctx.fillStyle='#b9d3f4';
+      for (let i=0;i<12;i++) {
+        const angle=i*2.39996, radius=(14+progress*45)*(.5+(i%3)*.2);
+        ctx.globalAlpha=(1-progress)*.25;
+        ctx.beginPath();ctx.arc(endX+Math.cos(angle)*radius,endY+Math.sin(angle)*radius,.65,0,Math.PI*2);ctx.fill();
+      }
+      ctx.restore();
+    }
+  }
   function tick(now) {
-    if (ending) return;
-    if (!document.documentElement.classList.contains('is-loading')) { cleanup(); return; }
-    const elapsed = now - started;
-    if (reduced.matches) {
-      loader.dataset.phase = 'row';
-      render(0, 1);
-      if (ready || elapsed > 1200) finish();
-      else frame = requestAnimationFrame(tick);
-      return;
-    }
-    if (alignAt === null && elapsed >= 1250 && (ready || elapsed >= 3600)) {
-      alignAt = elapsed;
-      frozenAngle = elapsed * .0014;
-      loader.dataset.phase = 'align';
-      loader.querySelector('.loader-caption').textContent = 'Ваше пространство готово';
-    }
-    render(elapsed);
-    if (alignAt !== null && elapsed - alignAt >= 1000) loader.dataset.phase = 'row';
-    if (alignAt !== null && elapsed - alignAt >= 1200) finish();
-    else frame = requestAnimationFrame(tick);
+    frame = 0;
+    if (completed) return;
+    if (reduced.matches) { staticIntro(); return; }
+    const elapsed = now-startTime;
+    draw(elapsed);
+    if (elapsed < timing.flight+timing.emblem) frame=requestAnimationFrame(tick);
   }
-
-  function cleanup() {
-    cancelAnimationFrame(frame);
-    clearTimeout(completionTimer);
-    window.removeEventListener('resize', resize);
-    reduced.removeEventListener('change', onMotionChange);
+  function start() {
+    if (started || completed) return;
+    started = true;
+    if (reduced.matches) { staticIntro(); return; }
+    loader.dataset.phase = 'flight';
+    startTime=performance.now();
+    frame=requestAnimationFrame(tick);
+    later(() => {
+      showEmblem();
+      later(() => { settled=true;maybeReveal(); }, timing.emblem);
+    }, timing.flight);
+    // Slow or broken resources never prolong the scene beyond a few seconds.
+    later(reveal, timing.flight+timing.emblem+700);
   }
-  function onMotionChange() {
-    if (reduced.matches && !ending) {
-      loader.dataset.phase = 'row';
-      render(0, 1);
-      if (ready) finish();
-    }
-  }
-
-  const imageReady = [...document.querySelectorAll('.foreground img, .brand-mark img')].map(image => image.decode?.() ?? Promise.resolve());
-  const assets = [document.fonts?.ready ?? Promise.resolve(), ...imageReady];
-  Promise.allSettled(assets.map(asset => Promise.resolve(asset).finally(() => {
-    assetsLoaded++;
-    loader.style.setProperty('--loaded', `${assetsLoaded / assets.length * 100}%`);
-  }))).then(() => { ready = true; });
-  window.addEventListener('resize', resize, { passive: true });
-  reduced.addEventListener('change', onMotionChange);
+  reduced.addEventListener('change',onMotionChange);
+  document.addEventListener('visibilitychange',onVisibility);
+  window.addEventListener('resize',resize,{passive:true});
+  window.addEventListener('husky:revealed',cleanup);
+  window.addEventListener('pagehide',complete);
+  skip.addEventListener('click',onSkip);
   resize();
-  frame = requestAnimationFrame(tick);
+  const logoReady=decode(logo);
+  const assets=[logoReady,document.fonts?.ready ?? Promise.resolve(),decode(document.querySelector('.foreground img'))];
+  let loaded=0;
+  Promise.allSettled(assets.map(asset => Promise.resolve(asset).finally(() => {
+    if (completed) return;
+    loader.style.setProperty('--loaded',`${++loaded/assets.length*100}%`);
+  }))).then(() => { ready=true;if (!completed) maybeReveal(); });
+  logoReady.then(start,start);
+  later(start,350);
+  if (document.hidden) complete();
 })();
