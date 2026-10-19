@@ -5,6 +5,25 @@
   const close = document.querySelector('.close-button');
   const toggle = document.querySelector('.motion-toggle');
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+  const interfaceToggle = document.querySelector('.interface-toggle');
+  const mobile = matchMedia('(max-width: 700px), (max-width: 1000px) and (max-height: 500px) and (pointer: coarse)');
+  const interfaceRegions = document.querySelectorAll('.site-header, main, .site-footer');
+  function setInterfaceHidden(hidden) {
+    document.body.classList.toggle('interface-hidden', hidden);
+    interfaceToggle.setAttribute('aria-pressed', String(hidden));
+    const label = hidden ? 'Показать интерфейс' : 'Скрыть интерфейс';
+    interfaceToggle.setAttribute('aria-label', label);
+    interfaceToggle.title = label;
+    interfaceRegions.forEach(element => {
+      element.inert = hidden || element.hasAttribute('data-loader-inert');
+    });
+  }
+  interfaceToggle.addEventListener('click', () => {
+    setInterfaceHidden(!document.body.classList.contains('interface-hidden'));
+  });
+  mobile.addEventListener('change', () => {
+    if (!mobile.matches) setInterfaceHidden(false);
+  });
   document.querySelectorAll('.actions .button').forEach(button => {
     button.addEventListener('pointermove', event => {
       if (event.pointerType === 'touch' || reduced.matches) return;

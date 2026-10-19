@@ -10,19 +10,6 @@ button,a{touch-action:manipulation}
 a{color:inherit;text-decoration:none}
 button:focus-visible,a:focus-visible{outline:2px solid #fff;outline-offset:6px}
 button{cursor:pointer}
-.preloader{position:fixed;inset:0;z-index:1000;display:none;align-items:center;justify-content:center;background:#080808;opacity:1;transition:opacity .55s ease;isolation:isolate}
-.preloader[hidden]{display:none!important}
-.is-loading .preloader,.preloader[data-phase="reveal"]{display:flex}
-.preloader[data-phase="reveal"]{opacity:0;pointer-events:none}
-#loader-sky{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;mask-image:radial-gradient(ellipse at 50% 48%,#0008 0%,#000 65%);-webkit-mask-image:radial-gradient(ellipse at 50% 48%,#0008 0%,#000 65%)}
-.loader-inner{position:relative;display:flex;flex-direction:column;align-items:center;transform:translateY(-12px)}
-.loader-stage{position:relative;width:min(340px,84vw);height:220px}
-#loader-stars{display:block;width:100%;height:100%}
-.loader-mark{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:50px;height:54px;overflow:hidden;opacity:.85;transition:opacity .35s ease,transform .5s ease}
-.loader-mark img{position:absolute;top:50%;left:50%;width:90px;height:90px;transform:translate(-50%,-50%)}
-.preloader[data-phase="align"] .loader-mark,.preloader[data-phase="row"] .loader-mark,.preloader[data-phase="reveal"] .loader-mark{opacity:0;transform:translate(-50%,-50%) scale(.85)}
-.loader-title{margin:16px 0 0 6px;color:#e8e8e8;font-size:19px;font-weight:500;letter-spacing:.32em;line-height:1.4}
-.loader-caption{margin:12px 0 0;color:#7e7e7e;font-size:12px;letter-spacing:.075em}
 .site-header,.hero,.site-footer,.music-player{transition:opacity .7s ease,filter .7s ease}
 .is-loading .site-header,.is-loading .hero,.is-loading .site-footer,.is-loading .music-player{opacity:0;filter:blur(5px);pointer-events:none}
 .is-loading .steel::after{animation-play-state:paused}
@@ -181,21 +168,6 @@ body.dialog-open{overflow:hidden}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.foreground{transform:translateX(-50%)}}
 @media(forced-colors:active){.steel{-webkit-text-fill-color:CanvasText;filter:none}.button{border:1px solid ButtonText}.steel::after{display:none}}
 
-/* Orbit intro: a quiet star field, fine orbital paths and a brushed-metal wordmark. */
-.preloader{background:radial-gradient(ellipse at 50% 45%,#191919 0%,#080808 55%,#040404 100%)}
-.loader-edge{position:absolute;top:38px;left:4.8%;right:4.8%;display:flex;justify-content:space-between;align-items:center;color:#909090;font-size:9px;letter-spacing:.2em}
-.loader-edge span:first-child{color:#ddd;font-size:13px;letter-spacing:.15em}
-.loader-inner{transform:translateY(-4px);width:100%}
-.loader-kicker{font-size:9px;letter-spacing:.26em;color:#818181;margin-bottom:18px}
-.loader-stage{width:min(380px,94vw);height:265px}
-.loader-stage::before{content:"";position:absolute;inset:30px 60px;border-radius:50%;background:radial-gradient(#ffffff0a,transparent 66%);pointer-events:none}
-.loader-mark{opacity:.95;filter:drop-shadow(0 0 18px #ffffff18)}
-.loader-title{margin:4px 0 0 9px;font-size:32px;font-weight:600;letter-spacing:.27em;color:transparent;background:linear-gradient(174deg,#fff 8%,#aeaeae 37%,#eee 44%,#676767 51%,#d9d9d9 78%);background-clip:text;-webkit-background-clip:text}
-.loader-caption{font-size:11px;letter-spacing:.045em;color:#919191;margin-top:18px}
-.loader-progress{margin-top:23px;width:116px;height:2px;background:#ffffff12;overflow:hidden}
-.loader-progress span{display:block;height:100%;width:var(--loaded,0%);background:linear-gradient(90deg,#626262,#ededed);box-shadow:0 0 12px #fff5;transition:width .7s ease}
-.preloader[data-phase="align"] .loader-progress,.preloader[data-phase="row"] .loader-progress{opacity:.4;transition:opacity .6s}
-
 /* Ten-track, native audio player. */
 .music-player{width:340px;padding:18px 20px 14px;border-radius:22px;background:linear-gradient(140deg,#ffffff0e,transparent 65%),#0a0a0acc;box-shadow:inset 0 1px 0 #ffffff17,0 18px 50px #0005}
 .music-heading-row{margin-bottom:17px}
@@ -243,9 +215,6 @@ body.motion-paused .music-artwork-fallback,body.motion-paused .music-equalizer i
   .music-player{margin-top:26px;padding:16px 17px 12px}
   .hero{margin-top:max(108px,14svh)}
   .site-footer{margin:0 25px 16px}
-  .loader-edge{top:27px;left:25px;right:25px}
-  .loader-edge span:last-child{font-size:7px;letter-spacing:.12em}
-  .loader-kicker{font-size:8px;letter-spacing:.19em}
 }
 
 /* Monochrome emoji keep the same white appearance on every device. */
