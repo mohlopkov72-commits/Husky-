@@ -5,17 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#08090a">
   <meta name="description" content="Husky — визуальный контент, веб-разработка и искусственный интеллект. Творчество и технологии в одном пространстве.">
-  <title>HUSKY — творчество и технологии</title>
+  <title>husky</title>
   <script>
     document.documentElement.classList.add('is-loading');
     window.huskyReveal = function () {
       document.documentElement.classList.remove('is-loading');
       const loader = document.getElementById('preloader');
+      const restoreFocus = loader?.contains(document.activeElement);
       if (loader) loader.hidden = true;
       document.querySelectorAll('[data-loader-inert]').forEach(function (element) {
         element.inert = false;
         element.removeAttribute('data-loader-inert');
       });
+      if (restoreFocus) document.querySelector('.actions .button')?.focus({preventScroll:true});
       window.huskySky?.setCovered(false);
       clearTimeout(window.huskyLoadingGuard);
       window.dispatchEvent(new Event('husky:revealed'));
@@ -27,6 +29,8 @@
   <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="home.css">
+  <link rel="stylesheet" href="fog.css">
+  <link rel="stylesheet" href="business-card.css">
   <link rel="stylesheet" href="weather.css">
   <link rel="stylesheet" href="loader.css">
   <link rel="preload" as="image" href="assets/husky-logo.webp">
@@ -35,6 +39,7 @@
   <script src="app.js" defer></script>
   <script src="loader.js" defer></script>
   <script src="music.js" defer></script>
+  <script src="business-card.js" defer></script>
 </head>
 <body class="home-page">
   <svg class="profile-emoji-filters" width="0" height="0" aria-hidden="true" focusable="false">
@@ -42,8 +47,9 @@
       <feColorMatrix type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  .3614 1.2158 .1228 0 -.28"/>
     </filter></defs>
   </svg>
-  <div id="preloader" class="preloader" role="status" aria-label="Загрузка сайта HUSKY" data-phase="prepare">
+  <div id="preloader" class="preloader" role="region" aria-label="Заставка HUSKY" data-phase="prepare">
     <div class="intro-ambient" aria-hidden="true"></div>
+    <div class="intro-horizon" aria-hidden="true"></div>
     <div class="intro-bloom" aria-hidden="true"></div>
     <canvas id="intro-meteor" aria-hidden="true"></canvas>
     <div class="intro-impact" aria-hidden="true"></div>
@@ -54,7 +60,7 @@
     <div class="intro-emblem" aria-hidden="true"><img class="intro-logo" src="assets/husky-logo.webp" width="1200" height="1200" alt="" fetchpriority="high"></div>
     <p class="intro-wordmark" aria-hidden="true">HUSKY</p>
     <div class="intro-bottom">
-      <p class="intro-status">Загружаем твоё пространство</p>
+      <p class="intro-status" role="status" aria-live="polite" aria-atomic="true">Загружаем твоё пространство</p>
       <div class="intro-meter" aria-hidden="true"><span></span></div>
       <span class="intro-footnote" aria-hidden="true">МЕЖДУ МУЗЫКОЙ И ЗВЁЗДАМИ</span>
     </div>
@@ -62,7 +68,7 @@
   <div class="night-scene" aria-hidden="true">
     <canvas id="night-sky"></canvas>
     <div class="sky-vignette"></div>
-    <div class="foreground"><img src="assets/foreground.png" width="2048" height="768" alt="" fetchpriority="high"></div>
+    <div class="white-fog"><span class="fog-layer fog-near"></span><span class="fog-layer fog-far"></span></div>
   </div>
 
   <header class="site-header" id="site-header">
@@ -75,7 +81,6 @@
 
   <main class="home-main" id="home-content">
     <section class="hero" aria-labelledby="hero-title">
-      <p class="eyebrow">MEDIA <span>/</span> DEV <span>/</span> AI</p>
       <h1 id="hero-title" class="steel" data-text="HUSKY">HUSKY</h1>
       <p class="hero-description">Визуальный контент, веб-разработка и ИИ.</p>
       <nav class="actions" aria-label="Знакомство и связь">
@@ -86,7 +91,7 @@
     <aside class="music-player" aria-labelledby="music-heading" hidden>
       <div class="music-heading-row">
         <h2 id="music-heading"><span class="music-equalizer" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Husky слушает</h2>
-        <span class="music-number" aria-label="Трек 1 из 10">01 / 10</span>
+        <span class="music-number" aria-label="Трек 1 из 11">01 / 11</span>
       </div>
       <div class="music-main">
         <div class="music-artwork"><img id="music-cover" width="56" height="56" alt="" decoding="async"><span class="music-artwork-fallback" aria-hidden="true"><span>H</span></span></div>
@@ -114,6 +119,17 @@
       <ol id="music-playlist" aria-label="Плейлист Husky" hidden></ol>
       <audio id="music-audio" preload="none"></audio>
     </aside>
+    <section class="card-scene" aria-label="Визитка Husky">
+      <div class="card-aura" aria-hidden="true"></div>
+      <article class="business-card">
+        <div class="card-top"><span class="card-symbol" aria-hidden="true">&lt;/&gt;</span><span class="card-edition">ЛИЧНАЯ ВИЗИТКА</span></div>
+        <div class="card-identity">
+          <div><h2>HUSKY<span class="card-period">.</span></h2><p>Разработка · ИИ · серверы</p></div>
+          <span class="card-logo"><img src="assets/husky-logo.webp" width="180" height="180" alt="Логотип Husky"></span>
+        </div>
+        <div class="card-bottom"><a href="https://t.me/husky_x" target="_blank" rel="noopener noreferrer" aria-label="Написать Husky в Telegram"><span><span class="card-contact-label">TELEGRAM</span><span class="card-handle">@husky_x</span></span><svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a><span class="card-signature" aria-hidden="true">H / X</span></div>
+      </article>
+    </section>
   </main>
 
   <footer class="site-footer" id="site-footer">

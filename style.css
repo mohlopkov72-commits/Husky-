@@ -16,8 +16,6 @@ button{cursor:pointer}
 .night-scene{position:fixed;inset:0;z-index:-2;overflow:hidden;background:linear-gradient(#060606,#111111 65%,#292929)}
 #night-sky{position:absolute;inset:0;width:100%;height:100%;display:block}
 .sky-vignette{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 47%,transparent 18%,#00000019 64%,#00000085 120%);pointer-events:none}
-.foreground{position:absolute;left:50%;bottom:-2px;width:max(calc(100vw + 64px),960px);height:auto;transform:translateX(-50%) translate(calc(var(--pointer-x) * -.17),calc(var(--pointer-y) * -.07));pointer-events:none}
-.foreground img{height:auto;width:100%;aspect-ratio:8 / 3;display:block;filter:brightness(0)}
 .site-header{position:absolute;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:34px 4.8%;z-index:1}
 .brand{display:flex;gap:16px;align-items:center}
 .brand-mark{position:relative;width:42px;height:48px;overflow:hidden;display:grid;place-items:center}
@@ -165,7 +163,7 @@ body.dialog-open{overflow:hidden}
 @media(max-width:700px){.hero{margin-top:16svh}.music-player{margin-top:28px}.site-footer{margin:0 25px 16px}.footer-label{max-width:220px}}
 @media(max-height:700px) and (max-width:700px){.hero{margin-top:110px}.music-player{margin-top:24px}}
 @media(max-height:500px){.hero{margin-top:110px}}
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.foreground{transform:translateX(-50%)}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 @media(forced-colors:active){.steel{-webkit-text-fill-color:CanvasText;filter:none}.button{border:1px solid ButtonText}.steel::after{display:none}}
 
 /* Ten-track, native audio player. */
