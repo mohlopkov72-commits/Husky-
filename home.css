@@ -18,7 +18,7 @@
 .home-page #music-playlist{position:static;max-height:230px;margin-top:12px;box-shadow:none;background:#ffffff03}
 .home-page #music-playlist[hidden]{margin-top:0}
 .home-page .sky-vignette{background:linear-gradient(90deg,#00000042,transparent 68%),radial-gradient(ellipse at 69% 66%,transparent 14%,#00000022 64%,#0000008c 120%)}
-.home-page .foreground{left:73%;width:max(calc(150vw + 64px),1400px)}
+
 .home-page .site-footer{position:relative;left:auto;right:auto;bottom:auto;min-height:80px;margin:0 var(--home-edge);gap:24px}
 .home-page .footer-label{font-size:10px;letter-spacing:.14em}
 .home-page .motion-toggle{font-size:11px}
@@ -37,7 +37,7 @@
   .home-page .steel{font-size:clamp(72px,9.5vw,94px)}
   .home-page .hero-description{font-size:16px;max-width:320px}
   .home-page .actions .button{min-width:0;padding:0 18px;gap:19px}
-  .home-page .foreground{left:77%;width:max(160vw,1400px)}
+
 }
 
 @media(max-width:700px){
@@ -52,7 +52,7 @@
   .home-page .actions{flex-direction:column;align-items:flex-start;gap:11px;margin-top:25px}
   .home-page .actions .button{width:min(232px,100%);min-height:50px;padding:0 18px;font-size:14px}
   .home-page .music-player{width:min(328px,100%);padding:16px 17px 12px}
-  .home-page .foreground{left:78%;width:max(180vw,1060px)}
+
   .home-page .site-footer{min-height:78px;padding-right:62px;gap:12px}
   .home-page .footer-label{max-width:185px;font-size:9px;letter-spacing:.1em}
   .home-page .footer-divider{padding:0 4px}

@@ -1,0 +1,10 @@
+/* Soft white ground mist, drawn without image downloads. */
+.white-fog{position:absolute;inset:auto 0 0;height:clamp(190px,29vh,330px);pointer-events:none;isolation:isolate}
+.fog-layer{position:absolute;inset:0 -12%;background-repeat:no-repeat;filter:blur(17px);will-change:transform;animation:fog-drift 34s ease-in-out infinite alternate}
+.fog-near{background-image:radial-gradient(ellipse at 12% 78%,#ffffff40,transparent 48%),radial-gradient(ellipse at 52% 85%,#ffffff45,transparent 47%),radial-gradient(ellipse at 90% 69%,#ffffff36,transparent 42%);transform:translateX(-2%)}
+.fog-far{inset:-18% -15% 4%;opacity:.65;background-image:radial-gradient(ellipse at 25% 76%,#ffffff30,transparent 39%),radial-gradient(ellipse at 70% 81%,#ffffff38,transparent 44%);animation-duration:47s;animation-delay:-18s;animation-direction:alternate-reverse}
+.white-fog::after{content:"";position:absolute;inset:0;background:linear-gradient(to bottom,transparent 15%,#03060908 40%,#0204069c 76%,#020304 100%)}
+@keyframes fog-drift{from{transform:translate3d(-2%,2%,0) scale(1)}to{transform:translate3d(3%,-2%,0) scale(1.04)}}
+.motion-paused .fog-layer,.dialog-open .fog-layer,.is-loading .fog-layer{animation-play-state:paused}
+@media(max-width:700px){.white-fog{height:210px}.fog-layer{filter:blur(12px)}}
+@media(prefers-reduced-motion:reduce){.fog-layer{animation:none;will-change:auto}}

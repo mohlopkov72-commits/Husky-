@@ -10,7 +10,8 @@
     { title: 'Режим облавы', artist: 'DEAD BLONDE', file: 'rezhim-oblavy' },
     { title: 'ствол', artist: 'полматери · ИИ-кавер', file: 'stvol' },
     { title: 'я люблю тебя давно, это грустно и смешно', artist: 'emoslut666 · speed up', file: 'ya-lyublyu-tebya' },
-    { title: 'Тебе сегодня можно взрослой быть', artist: 'GSPD, Little_emptiness · Slowed', file: 'tebe-segodnya-mozhno' }
+    { title: 'Тебе сегодня можно взрослой быть', artist: 'GSPD, Little_emptiness · Slowed', file: 'tebe-segodnya-mozhno' },
+    { title: 'трахнул ее мамашу', artist: 'нэнси холод', file: 'nensi-holod-trahnul-ee-mamashu' }
   ];
   const player = document.querySelector('.music-player');
   const audio = document.querySelector('#music-audio');

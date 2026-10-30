@@ -1,0 +1,23 @@
+/* The card uses real text, the original logo and an accessible contact link. */
+.home-page .home-main{position:relative;isolation:isolate;overflow-x:clip}
+.card-scene{position:absolute;right:5%;top:17%;bottom:12%;width:45%;display:grid;place-items:center;perspective:1400px;transition:opacity .65s,filter .65s}
+.card-aura{position:absolute;inset:0 -15%;background:radial-gradient(ellipse,#ffffff24,transparent 65%);pointer-events:none}
+.business-card{position:relative;width:100%;max-width:570px;aspect-ratio:1.65;border:1px solid #c4def35c;border-radius:25px;padding:clamp(24px,3vw,42px);display:flex;flex-direction:column;justify-content:space-between;background:linear-gradient(120deg,#b7c8dc1f,transparent 48%),linear-gradient(145deg,#243143db,#0b121ddd 60%,#142439e8);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);box-shadow:inset 0 1px 0 #f0f7ff66,inset 0 -1px 0 #cadfff14,0 35px 75px #0009,0 0 65px #ffffff18;transform:rotate(var(--card-roll,-7deg)) rotateX(var(--card-rx,0deg)) rotateY(calc(-9deg + var(--card-ry,0deg)));transition:border-color .4s}
+.business-card::before{content:"";position:absolute;inset:0;border-radius:inherit;background:radial-gradient(circle at var(--card-light-x,50%) var(--card-light-y,35%),#ffffff45,transparent 65%);opacity:.24;transition:opacity .4s;pointer-events:none}
+.business-card::after{content:"";position:absolute;top:-1px;left:12%;width:60%;height:1px;background:linear-gradient(90deg,transparent,#fff,transparent);pointer-events:none}
+.card-top,.card-identity,.card-bottom{display:flex;align-items:center;justify-content:space-between;gap:15px;position:relative}
+.card-top{color:#a6b4c5}.card-symbol{font-size:22px;letter-spacing:-3px;font-weight:350}.card-edition{font-size:8px;letter-spacing:.22em}
+.card-identity h2{margin:0;font-size:clamp(32px,4.2vw,61px);font-weight:600;letter-spacing:.08em;line-height:1.1;color:#edf2f8;text-shadow:0 2px 10px #0005}.card-period{color:#8bb8e2}
+.card-identity p{margin:12px 0 0;color:#a7b7ca;font-size:clamp(10px,1vw,14px);line-height:1.6}
+.card-logo{position:relative;display:block;width:28%;aspect-ratio:1;overflow:hidden;flex-shrink:0;opacity:.87;filter:drop-shadow(0 0 15px #bcdfff16)}.card-logo img{position:absolute;width:170%;height:170%;max-width:none;left:50%;top:50%;transform:translate(-50%,-50%);object-fit:contain}
+.card-bottom{border-top:1px solid #c0d7ee26;padding-top:21px}.card-bottom a{display:flex;align-items:center;justify-content:space-between;gap:30px;color:#dce8f4}.card-contact-label,.card-handle{display:block}.card-contact-label{font-size:7px;letter-spacing:.2em;color:#8298af;margin-bottom:7px}.card-handle{font-size:16px;letter-spacing:.025em}.card-bottom a svg{color:#a9c6e1;transition:transform .25s}.card-signature{font-size:10px;letter-spacing:.18em;color:#6e839b}
+.is-loading .card-scene{opacity:0;filter:blur(8px)}
+.interface-hidden .card-scene{opacity:0;filter:blur(5px);pointer-events:none}
+.business-card.is-tracking{border-color:#ffffffa6;will-change:transform}.business-card.is-tracking::before{opacity:1}
+@media(hover:hover){.business-card:hover,.business-card:focus-within{border-color:#ffffffa6}.card-bottom a:hover svg{transform:translate(2px,-2px)}}
+@media(max-width:1000px) and (min-width:701px){.card-scene{right:3%;width:43%;top:25%;bottom:14%}.business-card{padding:23px;border-radius:20px}.card-identity h2{font-size:33px}.card-identity p{font-size:10px}.card-logo{width:24%}.card-edition{font-size:6px}.card-bottom{padding-top:15px}.card-handle{font-size:14px}}
+@media(max-width:700px){.home-page .hero{grid-row:1}.card-scene{position:relative;inset:auto;grid-column:1;grid-row:2;width:100%;margin:28px 0 18px;justify-self:center}.business-card{width:94%;max-width:430px;min-height:210px;padding:24px;--card-roll:-5deg;border-radius:20px}.card-identity h2{font-size:34px}.card-identity p{font-size:10px}.card-edition{font-size:6px}.card-handle{font-size:14px}.card-bottom{padding-top:15px}.home-page .music-player{grid-column:1;grid-row:3}.card-aura{inset:-30% -5%}}
+@media(max-height:500px) and (min-width:701px){.card-scene{top:100px;bottom:50px;width:43%;right:3%}.business-card{max-width:390px;padding:24px}.card-identity h2{font-size:36px}.card-identity p{font-size:10px}.card-bottom{padding-top:12px}.home-page .music-player{grid-column:1;grid-row:2;width:min(340px,100%);margin:0}}
+@media(prefers-reduced-motion:reduce){.card-scene,.business-card,.card-bottom a svg{transition:none}.business-card,.business-card:hover,.business-card:focus-within{transform:none}}
+
+@media(prefers-reduced-motion:reduce){.business-card::before{transition:none}}
