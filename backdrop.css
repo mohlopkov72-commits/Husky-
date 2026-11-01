@@ -1,0 +1,91 @@
+/* Full-bleed photograph. Controls and text remain in the normal page layers. */
+.photo-backdrop {
+  pointer-events: none;
+  background: #292b2d;
+}
+
+.photo-backdrop picture,
+.photo-backdrop img,
+.photo-shade {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.photo-backdrop img {
+  object-fit: cover;
+  object-position: 84% center;
+}
+
+.photo-shade {
+  background:
+    linear-gradient(90deg, rgb(8 9 11 / 60%), rgb(8 9 11 / 32%) 30%, transparent 63%),
+    linear-gradient(0deg, rgb(8 9 11 / 65%), transparent 22%, transparent 88%, rgb(8 9 11 / 12%));
+}
+
+/* Move only the atmospheric veil. The car, figure and camera stay still. */
+.road-mist {
+  position: absolute;
+  inset: auto -10% 0;
+  height: 23%;
+  background:
+    radial-gradient(ellipse at 32% 72%, rgb(225 227 230 / 9%), transparent 57%),
+    radial-gradient(ellipse at 77% 66%, rgb(215 218 221 / 6%), transparent 48%);
+  animation: mist-drift 32s ease-in-out infinite alternate;
+}
+
+@keyframes mist-drift {
+  from { transform: translateX(-3%); }
+  to { transform: translateX(3%); }
+}
+
+.motion-paused .road-mist,
+.dialog-open .road-mist,
+.is-loading .road-mist {
+  animation-play-state: paused;
+}
+
+.home-page .hero-description {
+  color: #d6d7d8;
+  text-shadow: 0 1px 9px rgb(0 0 0 / 45%);
+}
+
+@media (max-width: 1024px) and (orientation: portrait) {
+  .photo-backdrop img { object-position: 72% 72%; }
+
+  .photo-shade {
+    background: linear-gradient(180deg, rgb(8 9 10 / 23%), rgb(8 9 10 / 10%) 40%, transparent 55%, transparent 78%, rgb(8 9 10 / 70%));
+  }
+
+  /* Reserve the middle of the first screen for the car in the portrait composition. */
+  .home-page .home-main {
+    --intro-top: clamp(102px, 14svh, 152px);
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(calc(83svh - var(--intro-top)), auto) auto;
+    padding-top: var(--intro-top);
+    padding-bottom: 32px;
+    align-content: start;
+    align-items: start;
+    row-gap: 24px;
+  }
+
+  .home-page .music-player {
+    grid-column: 1;
+    grid-row: 2;
+  }
+}
+
+@media (max-height: 500px) and (min-width: 701px) {
+  .home-page .music-player {
+    grid-column: 1;
+    grid-row: 2;
+    width: min(340px, 100%);
+    margin: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .road-mist { animation: none; }
+}
