@@ -18,7 +18,6 @@
         element.removeAttribute('data-loader-inert');
       });
       if (restoreFocus) document.querySelector('.actions .button')?.focus({preventScroll:true});
-      window.huskySky?.setCovered(false);
       clearTimeout(window.huskyLoadingGuard);
       window.dispatchEvent(new Event('husky:revealed'));
     };
@@ -29,17 +28,12 @@
   <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="home.css">
-  <link rel="stylesheet" href="fog.css">
-  <link rel="stylesheet" href="business-card.css">
-  <link rel="stylesheet" href="weather.css">
+  <link rel="stylesheet" href="backdrop.css">
   <link rel="stylesheet" href="loader.css">
   <link rel="preload" as="image" href="assets/husky-logo.webp">
-  <script src="weather.js" defer></script>
-  <script src="sky.js" defer></script>
   <script src="app.js" defer></script>
   <script src="loader.js" defer></script>
   <script src="music.js" defer></script>
-  <script src="business-card.js" defer></script>
 </head>
 <body class="home-page">
   <svg class="profile-emoji-filters" width="0" height="0" aria-hidden="true" focusable="false">
@@ -65,10 +59,13 @@
       <span class="intro-footnote" aria-hidden="true">МЕЖДУ МУЗЫКОЙ И ЗВЁЗДАМИ</span>
     </div>
   </div>
-  <div class="night-scene" aria-hidden="true">
-    <canvas id="night-sky"></canvas>
-    <div class="sky-vignette"></div>
-    <div class="white-fog"><span class="fog-layer fog-near"></span><span class="fog-layer fog-far"></span></div>
+  <div class="night-scene photo-backdrop" aria-hidden="true">
+    <picture>
+      <source media="(max-width: 1024px) and (orientation: portrait)" srcset="assets/husky-fog-portrait.webp" width="941" height="1672">
+      <img src="assets/husky-fog-wide.webp" width="1536" height="1024" alt="" fetchpriority="high" decoding="async">
+    </picture>
+    <div class="road-mist"></div>
+    <div class="photo-shade"></div>
   </div>
 
   <header class="site-header" id="site-header">
@@ -119,25 +116,15 @@
       <ol id="music-playlist" aria-label="Плейлист Husky" hidden></ol>
       <audio id="music-audio" preload="none"></audio>
     </aside>
-    <section class="card-scene" aria-label="Визитка Husky">
-      <div class="card-aura" aria-hidden="true"></div>
-      <article class="business-card">
-        <div class="card-top"><span class="card-symbol" aria-hidden="true">&lt;/&gt;</span><span class="card-edition">ЛИЧНАЯ ВИЗИТКА</span></div>
-        <div class="card-identity">
-          <div><h2>HUSKY<span class="card-period">.</span></h2><p>Разработка · ИИ · серверы</p></div>
-          <span class="card-logo"><img src="assets/husky-logo.webp" width="180" height="180" alt="Логотип Husky"></span>
-        </div>
-        <div class="card-bottom"><a href="https://t.me/husky_x" target="_blank" rel="noopener noreferrer" aria-label="Написать Husky в Telegram"><span><span class="card-contact-label">TELEGRAM</span><span class="card-handle">@husky_x</span></span><svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a><span class="card-signature" aria-hidden="true">H / X</span></div>
-      </article>
-    </section>
+
   </main>
 
   <footer class="site-footer" id="site-footer">
     <span class="footer-label">HUSKY <span class="footer-divider">/</span> ЛИЧНОЕ ПРОСТРАНСТВО</span>
-    <button class="motion-toggle" type="button" aria-label="Приостановить движение фона" aria-pressed="false" title="Приостановить движение фона">
+    <button class="motion-toggle" type="button" aria-label="Приостановить движение тумана" aria-pressed="false" title="Приостановить движение тумана">
       <svg class="icon-pause" width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M5.5 3.5v9m5-9v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
       <svg class="icon-play" width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m6 3.5 6 4.5-6 4.5v-9Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
-      <span class="motion-label">Движение неба</span>
+      <span class="motion-label">Движение тумана</span>
     </button>
   </footer>
 
@@ -178,7 +165,6 @@
           <div><span class="about-section-label">ЕСТЬ ПРЕДЛОЖЕНИЕ?</span><p>Связь и сотрудничество</p></div>
           <a href="https://t.me/husky_x" target="_blank" rel="noopener noreferrer" class="about-contact-button">Написать мне <span aria-hidden="true">↗</span></a>
         </footer>
-        <p class="scene-attribution"><a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer">Open-Meteo</a> · <a href="https://wttr.in/" target="_blank" rel="noopener noreferrer">wttr.in</a></p>
       </div>
     </div>
   </dialog>

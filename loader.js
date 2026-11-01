@@ -166,7 +166,7 @@
   skip.addEventListener('click',onSkip);
   resize();
   const logoReady=decode(logo);
-  const assets=[logoReady,document.fonts?.ready ?? Promise.resolve()];
+  const assets=[logoReady,document.fonts?.ready ?? Promise.resolve(),decode(document.querySelector('.photo-backdrop img'))];
   let loaded=0;
   Promise.allSettled(assets.map(asset => Promise.resolve(asset).finally(() => {
     if (completed) return;

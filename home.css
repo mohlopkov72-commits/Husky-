@@ -1,4 +1,4 @@
-/* Left-aligned introduction, open sky and the character on the right. */
+/* Introduction and player on the homepage. */
 .home-page{--home-edge:clamp(28px,7vw,140px)}
 .home-page .site-header{padding:32px var(--home-edge)}
 .home-page .home-main{min-height:calc(100svh - 80px);grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-content:center;justify-items:start;column-gap:48px;row-gap:30px;padding:clamp(132px,17svh,184px) var(--home-edge) 42px}
@@ -17,7 +17,6 @@
 .home-page .music-player{grid-column:1;position:relative;left:auto;right:auto;bottom:auto;width:min(360px,100%);margin:0;border-radius:19px;background:linear-gradient(135deg,#ffffff08,transparent 65%),#0a0c10c2}
 .home-page #music-playlist{position:static;max-height:230px;margin-top:12px;box-shadow:none;background:#ffffff03}
 .home-page #music-playlist[hidden]{margin-top:0}
-.home-page .sky-vignette{background:linear-gradient(90deg,#00000042,transparent 68%),radial-gradient(ellipse at 69% 66%,transparent 14%,#00000022 64%,#0000008c 120%)}
 
 .home-page .site-footer{position:relative;left:auto;right:auto;bottom:auto;min-height:80px;margin:0 var(--home-edge);gap:24px}
 .home-page .footer-label{font-size:10px;letter-spacing:.14em}

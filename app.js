@@ -41,10 +41,10 @@
   function updateMotion() {
     document.body.classList.toggle('motion-paused', paused);
     toggle.setAttribute('aria-pressed', String(paused));
-    const label = paused ? 'Включить движение фона' : 'Приостановить движение фона';
+    const label = paused ? 'Включить движение тумана' : 'Приостановить движение тумана';
     toggle.setAttribute('aria-label', label);
     toggle.title = label;
-    window.huskySky?.setPaused(paused);
+
   }
   toggle.addEventListener('click', () => { manualChoice = true; paused = !paused; updateMotion(); });
   reduced.addEventListener('change', () => { if (!manualChoice) { paused = reduced.matches; updateMotion(); } });
@@ -67,7 +67,7 @@
     dialog.showModal();
     dialog.scrollTop = 0;
     document.body.classList.add('dialog-open');
-    window.huskySky?.setCovered(true);
+
   });
   close.addEventListener('click', closeAbout);
   dialog.addEventListener('cancel', event => {
@@ -92,7 +92,7 @@
     clearTimeout(closeTimer);
     dialog.classList.remove('is-closing');
     document.body.classList.remove('dialog-open');
-    window.huskySky?.setCovered(false);
+
     open.focus({ preventScroll: true });
   });
   updateMotion();
